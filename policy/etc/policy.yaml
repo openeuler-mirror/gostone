@@ -1,0 +1,60 @@
+Keystone:
+  Rule:
+    - Name: admin_required
+      Operator: equal
+      Values:
+        - Key: role
+          Operator: in
+          Values:
+            - admin
+            - keystone_admin
+    - Name: owner
+      Operator: equal
+      Values:
+        - Key: userId
+          Operator: equal
+          Values:
+            - "%id"
+    - Name: service_role
+      Operator: equal
+      Values:
+        - Key: role
+          Operator: equal
+          Values:
+            - service
+    - Name: service_or_admin
+      Operator: or
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: rule
+          Operator: rule
+          Values:
+            - service_role
+  Policy:
+    - Name: get_user
+      Operator: and
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: rule
+          Operator: rule
+          Values:
+            - owner
+    - Name: get_project
+      Operator: and
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: not
+          Values:
+            - keystone_admin
+
+

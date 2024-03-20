@@ -1,0 +1,16 @@
+GoStone:
+  Database:
+    Url: keystone:qazwsxedc@tcp(mariadb.cty.os:10024)/keystone?charset=utf8&parseTime=true
+  Port:
+    - 16896
+    - 16897
+  LogLevel: info
+  Secret: 123465
+  ExpiresTime: 30
+  BaseUrl: http://keystone-admin.cty.os:10006
+  FernetPath: /etc/keystone/fernet-keys
+  TokenType: jwt
+  ConfPath: /etc/gostone
+  LogPath: /var/log/gostone
+  MaxIdleConns: 50
+  MaxOpenConns: 100

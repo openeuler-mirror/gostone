@@ -1,0 +1,423 @@
+Keystone:
+  Rule:
+    - Name: admin_required
+      Operator: equal
+      Values:
+        - Key: role
+          Operator: in
+          Values:
+            - admin
+            - keystone_admin
+    - Name: owner
+      Operator: equal
+      Values:
+        - Key: userId
+          Operator: equal
+          Values:
+            - "%id"
+    - Name: service_role
+      Operator: equal
+      Values:
+        - Key: role
+          Operator: equal
+          Values:
+            - service
+    - Name: service_or_admin
+      Operator: or
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: rule
+          Operator: rule
+          Values:
+            - service_role
+  Policy:
+    - Name: get_user
+      Operator: or
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: rule
+          Operator: rule
+          Values:
+            - owner
+        - Key: role
+          Operator: equal
+          Values:
+            - admin_read_only
+    - Name: list_users
+      Operator: or
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: equal
+          Values:
+            - admin_read_only
+    - Name: create_user
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: update_user
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: delete_user
+      Operator: and
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: not
+          Values:
+            - keystone_admin
+    - Name: admin_get_token
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: list_projects
+      Operator: or
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: equal
+          Values:
+            - admin_read_only
+    - Name: list_user_projects
+      Operator: or
+      Values:
+        - Key: role
+          Operator: equal
+          Values:
+            - admin_read_only
+        - Key: rule
+          Operator: rule
+          Values:
+            - owner
+    - Name: get_project
+      Operator: or
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: projectId
+          Operator: equal
+          Values:
+            - "%id"
+        - Key: role
+          Operator: equal
+          Values:
+            - admin_read_only
+    - Name: create_project
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: update_project
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: delete_project
+      Operator: and
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: not
+          Values:
+            - keystone_admin
+    - Name: list_roles
+      Operator: or
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: equal
+          Values:
+            - admin_read_only
+    - Name: get_role
+      Operator: or
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: equal
+          Values:
+            - admin_read_only
+    - Name: create_role
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: update_role
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: delete_role
+      Operator: and
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: not
+          Values:
+            - keystone_admin
+    - Name: list_grants
+      Operator: or
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: equal
+          Values:
+            - admin_read_only
+    - Name: list_role_assignments
+      Operator: or
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: equal
+          Values:
+            - admin_read_only
+    - Name: create_grant
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: check_grant
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: revoke_grant
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: list_services
+      Operator: or
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: equal
+          Values:
+            - admin_read_only
+    - Name: get_service
+      Operator: or
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: equal
+          Values:
+            - admin_read_only
+    - Name: create_service
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: update_service
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: delete_service
+      Operator: and
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: not
+          Values:
+            - keystone_admin
+    - Name: list_endpoints
+      Operator: or
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: equal
+          Values:
+            - admin_read_only
+    - Name: get_endpoint
+      Operator: or
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: equal
+          Values:
+            - admin_read_only
+    - Name: create_endpoint
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: update_endpoint
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: delete_endpoint
+      Operator: and
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: not
+          Values:
+            - keystone_admin
+    - Name: list_domains
+      Operator: or
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: equal
+          Values:
+            - admin_read_only
+    - Name: get_domain
+      Operator: or
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: domainId
+          Operator: equal
+          Values:
+            - "%id"
+        - Key: role
+          Operator: equal
+          Values:
+            - admin_read_only
+    - Name: create_domain
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: update_domain
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: delete_domain
+      Operator: and
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: not
+          Values:
+            - keystone_admin
+    - Name: create_region
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: update_region
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+    - Name: delete_region
+      Operator: and
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - admin_required
+        - Key: role
+          Operator: not
+          Values:
+            - keystone_admin
+    - Name: validate_token
+      Operator: equal
+      Values:
+        - Key: rule
+          Operator: rule
+          Values:
+            - service_admin_or_owner

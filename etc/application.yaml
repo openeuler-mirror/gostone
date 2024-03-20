@@ -1,0 +1,25 @@
+GoStone:
+  Database:
+    Url: root:123456@tcp(172.28.8.248:13306)/gostone?charset=utf8&parseTime=true&timeout=1s
+  Port:
+   - 8100
+   - 8101
+  LogLevel: info
+  LogRotateTime: 24
+  LogMaxAge: 720
+  Secret: jwtas%123s
+  SignMethod: HS256
+  ExpiresTime: 30
+  BaseUrl: http://localhost:8100
+  FernetPath: ./etc/fernet-keys
+  TokenType: jwt
+  ConfPath: ./etc
+  LogPath: ./log
+  RetryConnect: 10
+  MaxIdleConns: 100
+  MaxOpenConns: 100
+  RefreshTime: 2
+  SkipAuth: false
+  AdminPassword: ADMIN_PASS
+  InitEndpoint: http://127.0.0.1:16896/v3/
+  InitRegion: vm-az1

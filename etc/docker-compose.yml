@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  gostone:
+    image: docker.ctyun.cn:60001/gostack/gostone:latest
+    volumes:
+      - ./application.yaml:/etc/application.yaml
+      - ./policy.yaml:/etc/policy.yaml
+    ports:
+      - 15896:8100
+      - 15897:8100
