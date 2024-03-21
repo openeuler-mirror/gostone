@@ -1,0 +1,1 @@
+xorm reverse mysql root:123456@tcp\(172.28.8.248:13306\)/keystone\?charset=utf8 template/goxorm

@@ -1,0 +1,17 @@
+[Unit]
+Description=gostone
+After=network.target
+
+[Service]
+Environment=
+User=root
+Group=root
+PermissionsStartOnly=true
+ExecStart=/usr/local/bin/gostone /etc/gostone/application.yaml
+Restart=always
+LimitNOFILE=65535
+WorkingDirectory=/
+StandardOutput=file:/var/log/gostone/gostone.log
+
+[Install]
+WantedBy=multi-user.target

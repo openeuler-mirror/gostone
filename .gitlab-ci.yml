@@ -1,0 +1,102 @@
+image: docker
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+stages:
+  - docker-master
+  - docker-tag
+  - build-bin
+  - build-rpm
+  - upload-rpm
+  - sonarqube_scan
+  - sendmail
+
+#test:
+#  stage: test
+#  image: golang:1.14
+#  script:
+#    - go test
+
+
+docker-master:
+  stage: docker-master
+  image: docker
+  script:
+    - DATE=`date +%Y%m%d`
+    - TAG=$CI_JOB_ID
+    - docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTER}
+    - docker build -t ${DOCKER_REGISTER}/${PROJECT_NAME}:$TAG .
+    - docker push ${DOCKER_REGISTER}/${PROJECT_NAME}:$TAG
+    - docker tag ${DOCKER_REGISTER}/${PROJECT_NAME}:$TAG ${DOCKER_REGISTER}/${PROJECT_NAME}:latest
+    - docker push ${DOCKER_REGISTER}/${PROJECT_NAME}:latest
+    - docker rmi ${DOCKER_REGISTER}/${PROJECT_NAME}:$TAG
+    - docker rmi ${DOCKER_REGISTER}/${PROJECT_NAME}:latest
+
+docker-tag:
+  stage: docker-tag
+  image: docker
+  only:
+    - tags
+  script:
+    - DATE=`date +%Y%m%d`
+    - TAG=$CI_COMMIT_REF_NAME
+    - docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REGISTER}
+    - docker build -t ${DOCKER_REGISTER}/${PROJECT_NAME}:$TAG .
+    - docker push ${DOCKER_REGISTER}/${PROJECT_NAME}:$TAG
+    - docker rmi ${DOCKER_REGISTER}/${PROJECT_NAME}:$TAG
+
+build-bin:
+  stage: build-bin
+  image: docker.ctyun.cn:60001/library/golang:1.16.6
+  script:
+    - source /etc/profile
+    - go env -w GO111MODULE=on
+    - go env -w GOPROXY=https://goproxy.cn,direct
+    - go env -w GOINSECURE=git.ctyun.cn
+    - go env -w GOPRIVATE=git.ctyun.cn
+    - go mod download
+    - go build -tags netgo
+  artifacts:
+    paths:
+      - /builds/gostack/gostone/gostone
+
+build-rpm:
+  stage: build-rpm
+  image: docker.ctyun.cn:60001/library/gitlab-ci-rpmbuild:latest
+  when: manual
+  script:
+    - rpmbuild -ba --clean --define "_topdir `pwd`"  --define "project_version ${VERSION}" --define "project_release ${RELEASE}" --define "buildroot `pwd`/BUILDROOT"  --define "_binary_filedigest_algorithm md5" --define "_source_payload nil" --define "_binary_payload nil" rpmbuild/SPECS/*.spec
+    - mkdir build
+    - mv RPMS/x86_64/*.rpm build/
+    - rm -rf /cache/gostone/rpm
+    - mkdir -p /cache/gostone/rpm
+    - cp build/GoStone-${VERSION}-${RELEASE}.x86_64.rpm  /cache/gostone/rpm
+  artifacts:
+    paths:
+      - build/
+
+upload-rpm:
+  stage: upload-rpm
+  when: manual
+  image: docker.ctyun.cn:60001/library/python:2.7-rpm
+  script:
+    - echo http://172.28.8.28:18300/gostone/rpm/GoStone-${VERSION}-${RELEASE}.x86_64.rpm
+    - /usr/local/bin/python /builds/gostack/gostone/etc/jenkins_rpm_sync.py http://172.28.8.28:18300/gostone/rpm/GoStone-${VERSION}-${RELEASE}.x86_64.rpm CT-dev/gostack
+
+
+sonarqube_scan:
+  stage: sonarqube_scan
+  script:
+    - sonar-scanner -Dsonar.projectName=$CI_PROJECT_NAME -Dsonar.projectKey=$CI_PROJECT_NAME -Dsonar.branch.name=${CI_COMMIT_REF_NAME} -Dsonar.language=golang -Dsonar.host.url=http://172.28.8.250:9000/sonar  -Dsonar.login=4f22edb8c898d278bf09821cf5ed8b73e4f62b50
+  image: docker.ctyun.cn:60001/library/sonar-scanner-cli
+  when: always
+
+sendmail:
+  stage: sendmail
+  image: docker.ctyun.cn:60001/library/python3
+  script:
+    - echo $GITLAB_USER_EMAIL
+    - echo $CI_PROJECT_NAME
+    - echo $CI_COMMIT_REF_NAME
+    - python3 /root/sonarqube_api.py $CI_PROJECT_NAME $CI_COMMIT_REF_NAME $GITLAB_USER_EMAIL
