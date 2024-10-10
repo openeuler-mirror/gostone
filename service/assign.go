@@ -19,7 +19,7 @@ import (
 func FindRoleListByProjectAndUser(ctx echo.Context) error {
 	auth := utils.GetTokenMethod(ctx.Get(utils.TokenTypeKey)).GetAuthContext(ctx)
 	if !policy.Check("list_grants", auth, nil) {
-		panic(execption.NewGoStoneError(http.StatusForbidden, "policy not valid"))
+		panic(execption.NewGoStoneError(http.StatusForbidden, "policy is not valid"))
 	}
 	projectId := ctx.Param("project_id")
 	userId := ctx.Param("user_id")
@@ -57,7 +57,7 @@ func FindRoleListByProjectAndUser(ctx echo.Context) error {
 func GetAllAssignment(ctx echo.Context) error {
 	auth := utils.GetTokenMethod(ctx.Get(utils.TokenTypeKey)).GetAuthContext(ctx)
 	if !policy.Check("list_grants", auth, nil) {
-		panic(execption.NewGoStoneError(http.StatusForbidden, "policy not valid"))
+		panic(execption.NewGoStoneError(http.StatusForbidden, "policy is not valid"))
 	}
 	search := new(request.AssignmentSearch)
 	getQuery(ctx.QueryParams(), search)
@@ -115,7 +115,7 @@ func SaveRole2UserOnProjectName(ctx echo.Context) error {
 		RoleId:   roleId,
 	}
 	if !policy.Check("create_grant", auth, assign) {
-		panic(execption.NewGoStoneError(http.StatusForbidden, "policy not valid"))
+		panic(execption.NewGoStoneError(http.StatusForbidden, "policy is not valid"))
 	}
 	//hasAss := assignment.FindAssignmentByUserId(userId)
 	//for _, a := range hasAss {
@@ -146,7 +146,7 @@ func SaveRole2UserOnProject(ctx echo.Context) error {
 		RoleId:   roleId,
 	}
 	if !policy.Check("create_grant", auth, assign) {
-		panic(execption.NewGoStoneError(http.StatusForbidden, "policy not valid"))
+		panic(execption.NewGoStoneError(http.StatusForbidden, "policy is not valid"))
 	}
 	//hasAss := assignment.FindAssignmentByUserId(userId)
 	//for _, a := range hasAss {
@@ -172,7 +172,7 @@ func ValidRole2UserOnProject(ctx echo.Context) error {
 		"actorId":  userId,
 		"roleId":   roleId,
 	}) {
-		panic(execption.NewGoStoneError(http.StatusForbidden, "policy not valid"))
+		panic(execption.NewGoStoneError(http.StatusForbidden, "policy is not valid"))
 	}
 	assign := assignment.FindAssignmentByRoleIdAndActorIdAndTargetIdNoError(roleId, userId, projectId)
 	if assign != nil && len(assign) != 0 {
@@ -191,7 +191,7 @@ func DeleteRole2UserOnProject(ctx echo.Context) error {
 		"actorId":  userId,
 		"roleId":   roleId,
 	}) {
-		panic(execption.NewGoStoneError(http.StatusForbidden, "policy not valid"))
+		panic(execption.NewGoStoneError(http.StatusForbidden, "policy is not valid"))
 	}
 	assignment.DeleteAssignment(roleId, userId, projectId)
 	return ctx.NoContent(http.StatusNoContent)
